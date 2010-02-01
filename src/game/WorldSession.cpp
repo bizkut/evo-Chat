@@ -778,7 +778,7 @@ void WorldSession::SaveTutorialsData()
 void WorldSession::ReadMovementInfo(WorldPacket &data, MovementInfo *mi)
 {
     data >> mi->flags;
-    data >> mi->unk1;
+    data >> mi->moveFlags2;
     data >> mi->time;
     data >> mi->x;
     data >> mi->y;
@@ -796,9 +796,12 @@ void WorldSession::ReadMovementInfo(WorldPacket &data, MovementInfo *mi)
         data >> mi->t_o;
         data >> mi->t_time;
         data >> mi->t_seat;
+
+        if(mi->moveFlags2 & MOVEFLAG2_UNK1)
+            data >> mi->t_time2;
     }
 
-    if((mi->HasMovementFlag(MovementFlags(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING))) || (mi->unk1 & 0x20))
+    if((mi->HasMovementFlag(MovementFlags(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING))) || (mi->moveFlags2 & MOVEFLAG2_ALLOW_PITCHING))
     {
         data >> mi->s_pitch;
     }
@@ -807,7 +810,7 @@ void WorldSession::ReadMovementInfo(WorldPacket &data, MovementInfo *mi)
 
     if(mi->HasMovementFlag(MOVEMENTFLAG_JUMPING))
     {
-        data >> mi->j_unk;
+        data >> mi->j_velocity;
         data >> mi->j_sinAngle;
         data >> mi->j_cosAngle;
         data >> mi->j_xyspeed;
@@ -824,7 +827,7 @@ void WorldSession::WriteMovementInfo(WorldPacket *data, MovementInfo *mi)
     data->appendPackGUID(mi->guid);
 
     *data << mi->flags;
-    *data << mi->unk1;
+    *data << mi->moveFlags2;
     *data << mi->time;
     *data << mi->x;
     *data << mi->y;
@@ -841,9 +844,12 @@ void WorldSession::WriteMovementInfo(WorldPacket *data, MovementInfo *mi)
         *data << mi->t_o;
         *data << mi->t_time;
         *data << mi->t_seat;
+
+        if(mi->moveFlags2 & MOVEFLAG2_UNK1)
+            *data << mi->t_time2;
     }
 
-    if((mi->HasMovementFlag(MovementFlags(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING))) || (mi->unk1 & 0x20))
+    if((mi->HasMovementFlag(MovementFlags(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING))) || (mi->moveFlags2 & MOVEFLAG2_ALLOW_PITCHING))
     {
         *data << mi->s_pitch;
     }
@@ -852,7 +858,7 @@ void WorldSession::WriteMovementInfo(WorldPacket *data, MovementInfo *mi)
 
     if(mi->HasMovementFlag(MOVEMENTFLAG_JUMPING))
     {
-        *data << mi->j_unk;
+        *data << mi->j_velocity;
         *data << mi->j_sinAngle;
         *data << mi->j_cosAngle;
         *data << mi->j_xyspeed;
